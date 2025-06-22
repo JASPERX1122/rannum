@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เกมสุ่มเลขจากน้อง JASPER!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Mali', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #3a3a60);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.2em;
+    }
+
+    p {
+      font-size: 1.3em;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.5em;
+      background: #ff6f61;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff6f61aa;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #ff6f61;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-size: 2em;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      min-width: 300px;
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    .emoji {
+      position: fixed;
+      font-size: 2rem;
+      animation: fall 3s linear infinite;
+      z-index: 10;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100px); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎲 เกมสุ่มเลข!</h1>
+  <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
+  <button onclick="play()">กดสุ่มเลข</button>
+  <div id="result">ยังไม่ได้สุ่ม</div>
+  <canvas id="canvas"></canvas>
+
+  <!-- เสียง -->
+  <audio id="fartSound" src="fart.mp3"></audio>
+  <audio id="yaySound" src="yay.mp3"></audio>
+
+  <script>
+    const result = document.getElementById("result");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const fartSound = document.getElementById("fartSound");
+    const yaySound = document.getElementById("yaySound");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.onresize = resize;
+    resize();
+
+    function play() {
+      result.innerText = "กำลังสุ่ม...";
+      setTimeout(() => {
+        let n = Math.floor(Math.random() * 10) + 1;
+        result.innerText = "เลขที่สุ่มได้: " + n;
+        if (n === 1) {
+          result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
+          firework();
+          yaySound.play();
+        } else {
+          result.innerText += "\n💩 แพ้ไปเถอะไอ้ควย โคตรกาก!";
+          poopRain();
+          fartBurst();
+        }
+      }, 800);
+    }
+
+    function poopRain() {
+      for (let i = 0; i < 20; i++) {
+        let poop = document.createElement("div");
+        poop.textContent = "💩";
+        poop.className = "emoji";
+        poop.style.left = Math.random() * 100 + "vw";
+        poop.style.animationDuration = (2 + Math.random()) + "s";
+        document.body.appendChild(poop);
+        setTimeout(() => poop.remove(), 3000);
+      }
+    }
+
+    function fartBurst() {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => fartSound.play(), i * 400);
+      }
+    }
+
+    const fireworks = [];
+    function firework() {
+      for (let i = 0; i < 30; i++) {
+        fireworks.push({
+          x: canvas.width / 2,
+          y: canvas.height,
+          vx: Math.random() * 6 - 3,
+          vy: -Math.random() * 10 - 5,
+          alpha: 1,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`
+        });
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let fw of fireworks) {
+        fw.x += fw.vx;
+        fw.y += fw.vy;
+        fw.alpha -= 0.02;
+        ctx.globalAlpha = fw.alpha;
+        ctx.fillStyle = fw.color;
+        ctx.beginPath();
+        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</body>
+</html>
