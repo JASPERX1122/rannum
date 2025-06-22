@@ -212,15 +212,52 @@
     }
     animate();
 
-    // ลูกไฟสีรุ้ง
-    for (let i = 0; i < 15; i++) {
-      const orb = document.createElement("div");
-      orb.className = "orb";
-      orb.style.top = Math.random() * 100 + "vh";
-      orb.style.left = Math.random() * 100 + "vw";
-      orb.style.animationDuration = `${5 + Math.random() * 10}s`;
-      document.body.appendChild(orb);
-    }
-  </script>
+<canvas id="bgParticles" style="position: fixed; top: 0; left: 0; z-index: 1;"></canvas>
+<script>
+const bgCanvas = document.getElementById("bgParticles");
+const bgCtx = bgCanvas.getContext("2d");
+bgCanvas.width = window.innerWidth;
+bgCanvas.height = window.innerHeight;
+
+window.addEventListener("resize", () => {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+});
+
+const balls = [];
+const numBalls = 50;
+
+for (let i = 0; i < numBalls; i++) {
+  balls.push({
+    x: Math.random() * bgCanvas.width,
+    y: Math.random() * bgCanvas.height,
+    r: Math.random() * 15 + 5,
+    dx: (Math.random() - 0.5) * 2,
+    dy: (Math.random() - 0.5) * 2,
+    color: `hsla(${Math.random() * 360}, 100%, 70%, 0.6)`
+  });
+}
+
+function drawBalls() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  for (let ball of balls) {
+    bgCtx.beginPath();
+    bgCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = ball.color;
+    bgCtx.shadowColor = ball.color;
+    bgCtx.shadowBlur = 15;
+    bgCtx.fill();
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // เด้งขอบ
+    if (ball.x < 0 || ball.x > bgCanvas.width) ball.dx *= -1;
+    if (ball.y < 0 || ball.y > bgCanvas.height) ball.dy *= -1;
+  }
+  requestAnimationFrame(drawBalls);
+}
+drawBalls();
+</script>
+
 </body>
 </html>
