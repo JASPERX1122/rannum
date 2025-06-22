@@ -28,21 +28,67 @@
       50% {background-position: 100% 0%;}
       100% {background-position: 0% 100%;}
     }
+
+    /* กรอบ UI Container */
+    #uiContainer {
+      background: rgba(30, 30, 40, 0.7); /* สีขุ่นๆ */
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow:
+        0 0 20px rgba(255,255,255,0.1),
+        inset 0 0 50px rgba(255,255,255,0.05);
+      position: relative;
+      z-index: 10;
+      max-width: 400px;
+      width: 90vw;
+      text-align: center;
+      user-select:none;
+    }
+    /* ไฟ RGB วิ่งรอบขอบ */
+    #uiContainer::before {
+      content: "";
+      position: absolute;
+      top: -4px; left: -4px; right: -4px; bottom: -4px;
+      border-radius: 24px;
+      padding: 2px;
+      background: linear-gradient(
+        270deg,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet,
+        red
+      );
+      background-size: 1400% 1400%;
+      animation: rainbowBorder 12s linear infinite;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes rainbowBorder {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
     h1 {
       font-size: 3em;
       text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-      z-index: 10;
-      position: relative;
       margin-bottom: 0.25em;
     }
     p {
       font-size: 1.2em;
       margin-bottom: 1em;
-      z-index: 10;
-      position: relative;
       text-align: center;
       max-width: 320px;
-      user-select:none;
     }
     button {
       margin: 10px;
@@ -54,10 +100,8 @@
       color: #000;
       cursor: pointer;
       box-shadow: 0 0 15px #00ffffaa;
-      z-index: 10;
-      position: relative;
-      user-select:none;
       transition: transform 0.2s, box-shadow 0.2s;
+      user-select:none;
     }
     button:hover:enabled {
       transform: scale(1.05);
@@ -72,24 +116,17 @@
     #result {
       margin-top: 20px;
       font-size: 1.5em;
-      text-align: center;
       white-space: pre-line;
       padding: 10px 20px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      min-width: 300px;
       box-shadow: 0 0 15px #ffffff22;
-      z-index: 10;
-      position: relative;
-      user-select:none;
+      min-width: 300px;
     }
     .score {
       margin-top: 10px;
       font-size: 1.2em;
       text-shadow: 0 0 5px #ff0;
-      z-index: 10;
-      position: relative;
-      user-select:none;
     }
     .emoji {
       position: fixed;
@@ -109,8 +146,7 @@
       margin-top: 30px;
       display: flex;
       gap: 30px;
-      z-index: 10;
-      position: relative;
+      justify-content: center;
     }
     .links a {
       color: #0ff;
@@ -141,7 +177,7 @@
       fill: #ff0000;
       filter: drop-shadow(0 0 2px #ff0000);
     }
-    /* ลูกไฟสีรุ้งลอย */
+    /* ลูกไฟสีรุ้งลอยพื้นหลัง */
     #bgCanvas {
       position: fixed;
       top: 0; left: 0;
@@ -163,20 +199,22 @@
 </head>
 <body>
 
-  <h1>🎲 เกมสุ่มเลข!</h1>
-  <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
-  <button id="playBtn">กดสุ่มเลข</button>
-  <button id="resetBtn">รีเซ็ตแต้ม</button>
-  <div id="result">ยังไม่ได้สุ่ม</div>
-  <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
+  <div id="uiContainer">
+    <h1>🎲 เกมสุ่มเลข!</h1>
+    <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
+    <button id="playBtn">กดสุ่มเลข</button>
+    <button id="resetBtn">รีเซ็ตแต้ม</button>
+    <div id="result">ยังไม่ได้สุ่ม</div>
+    <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
 
-  <div class="links">
-    <a href="https://discord.gg/44Bd6XuxGR" target="_blank" aria-label="Discord" title="Discord">
-      <svg class="discord-icon" viewBox="0 0 245 240" xmlns="http://www.w3.org/2000/svg"><path d="M104.4 103.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.6-11.1-10.2-11.1zm36.1 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.5-11.1-10.2-11.1z"/><path d="M189.5 20H55.6C39.4 20 26.5 32.8 26.5 49.7v111.4c0 16.9 12.9 29.7 29.1 29.7h89.6l-4.2-14.7 10.1 9.4 9.5 8.5 16.8 14.7V49.7c0-16.9-12.9-29.7-29.1-29.7zM171.6 163s-5.1-6.1-9.3-11.6c18.5-5.3 25.5-16.9 25.5-16.9-5.7 3.7-11.1 6.3-16 8.1-6.9 3-13.5 5-20.1 6.1-13.2 2.5-25.3 1.9-35.4-0.8-7.7-1.9-14.3-4.7-19.4-8.1-0.8-0.4-1.7-0.8-2.5-1.3-0.1-0.1-0.2-0.1-0.3-0.2-0.7-0.3-1.1-0.5-1.5-0.7-0.3-0.2-0.4-0.3-0.4-0.3-1.7-1.1-2.6-1.8-2.6-1.8s7 11.2 25.3 16.7c-4.2 5.5-9.5 11.9-9.5 11.9-31.3-1-43.2-21.5-43.2-21.5 0-45.6 20.4-82.6 20.4-82.6 20.4-15.2 39.8-14.8 39.8-14.8l1.4 1.6c-25.6 7.3-37.4 18.3-37.4 18.3s3.1-1.7 8.4-4.1c15.3-6.9 27.3-8.7 32.3-9.2 0.8-0.2 1.5-0.3 2.3-0.3 8.4-1.1 18.2-0.1 28.4 8.4 0 0 17.2 12.7 19.1 39.8z"/></svg>
-    </a>
-    <a href="https://www.youtube.com/@JASPERX_" target="_blank" aria-label="YouTube" title="YouTube">
-      <svg class="youtube-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 15l5.19-3L10 9v6zm9-3c0-1.1-.9-2-2-2h-1.77c-.18 0-.35.06-.5.16L14 12l1.73 1.84c.15.1.32.16.5.16H17c1.1 0 2-.9 2-2zM21 6.5v11c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 20 3 18.88 3 17.5v-11C3 5.12 4.12 4 5.5 4h13c1.38 0 2.5 1.12 2.5 2.5z"/></svg>
-    </a>
+    <div class="links">
+      <a href="https://discord.gg/44Bd6XuxGR" target="_blank" aria-label="Discord" title="Discord">
+        <svg class="discord-icon" viewBox="0 0 245 240" xmlns="http://www.w3.org/2000/svg"><path d="M104.4 103.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.6-11.1-10.2-11.1zm36.1 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.5-11.1-10.2-11.1z"/><path d="M189.5 20H55.6C39.4 20 26.5 32.8 26.5 49.7v111.4c0 16.9 12.9 29.7 29.1 29.7h89.6l-4.2-14.7 10.1 9.4 9.5 8.5 16.8 14.7V49.7c0-16.9-12.9-29.7-29.1-29.7zM171.6 163s-5.1-6.1-9.3-11.6c18.5-5.3 25.5-16.9 25.5-16.9-5.7 3.7-11.1 6.3-16 8.1-6.9 3-13.5 5-20.1 6.1-13.2 2.5-25.3 1.9-35.4-0.8-7.7-1.9-14.3-4.7-19.4-8.1-0.8-0.4-1.7-0.8-2.5-1.3-0.1-0.1-0.2-0.1-0.3-0.2-0.7-0.3-1.1-0.5-1.5-0.7-0.3-0.2-0.4-0.3-0.4-0.3-1.7-1.1-2.6-1.8-2.6-1.8s7 11.2 25.3 16.7c-4.2 5.5-9.5 11.9-9.5 11.9-31.3-1-43.2-21.5-43.2-21.5 0-45.6 20.4-82.6 20.4-82.6 20.4-15.2 39.8-14.8 39.8-14.8l1.4 1.6c-25.6 7.3-37.4 18.3-37.4 18.3s3.1-1.7 8.4-4.1c15.3-6.9 27.3-8.7 32.3-9.2 0.8-0.2 1.5-0.3 2.3-0.3 8.4-1.1 18.2-0.1 28.4 8.4 0 0 17.2 12.7 19.1 39.8z"/></svg>
+      </a>
+      <a href="https://www.youtube.com/@JASPERX_" target="_blank" aria-label="YouTube" title="YouTube">
+        <svg class="youtube-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 15l5.19-3L10 9v6zm9-3c0-1.1-.9-2-2-2h-1.77c-.18 0-.35.06-.5.16L14 12l1.73 1.84c.15.1.32.16.5.16H17c1.1 0 2-.9 2-2zM21 6.5v11c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 20 3 18.88 3 17.5v-11C3 5.12 4.12 4 5.5 4h13c1.38 0 2.5 1.12 2.5 2.5z"/></svg>
+      </a>
+    </div>
   </div>
 
   <canvas id="fireworkCanvas"></canvas>
@@ -187,7 +225,6 @@
   <audio id="bomSound" src="bom.mp3"></audio>
 
   <script>
-    // ตัวแปรหลัก
     const playBtn = document.getElementById("playBtn");
     const resetBtn = document.getElementById("resetBtn");
     const result = document.getElementById("result");
@@ -197,10 +234,8 @@
     const yaySound = document.getElementById("yaySound");
     const bomSound = document.getElementById("bomSound");
 
-    // สถานะเกม
     let win = 0, lose = 0, isCoolingDown = false;
 
-    // ฟังก์ชันสุ่มเลขและจัดการผล
     playBtn.onclick = () => {
       if (isCoolingDown) return;
       isCoolingDown = true;
@@ -242,7 +277,6 @@
       loseCountSpan.textContent = lose;
     };
 
-    // เอฟเฟกต์ขี้ตก
     function poopRain() {
       for (let i = 0; i < 20; i++) {
         const poop = document.createElement("div");
@@ -256,7 +290,6 @@
       }
     }
 
-    // พลุไฟ
     const fireworkCanvas = document.getElementById("fireworkCanvas");
     const fwCtx = fireworkCanvas.getContext("2d");
     fireworkCanvas.width = window.innerWidth;
@@ -295,7 +328,6 @@
     }
     animateFireworks();
 
-    // ลูกไฟสีรุ้งลอยพื้นหลัง
     const bgCanvas = document.getElementById("bgCanvas");
     const bgCtx = bgCanvas.getContext("2d");
     bgCanvas.width = window.innerWidth;
@@ -308,24 +340,17 @@
 
     class Orb {
       constructor() {
-        this.reset();
-      }
-      reset() {
+        this.r = Math.random() * 15 + 5;
         this.x = Math.random() * bgCanvas.width;
         this.y = Math.random() * bgCanvas.height;
-        this.r = Math.random() * 15 + 8;
+        this.dx = (Math.random() - 0.5) * 0.5;
+        this.dy = (Math.random() - 0.5) * 0.5;
         this.colorHue = Math.random() * 360;
-        this.alpha = 0.6 + Math.random() * 0.4;
-        this.speedX = (Math.random() * 0.8 + 0.2) * (Math.random() < 0.5 ? -1 : 1);
-        this.speedY = (Math.random() * 0.8 + 0.2) * (Math.random() < 0.5 ? -1 : 1);
-        this.angle = Math.random() * 2 * Math.PI;
-        this.angleSpeed = 0.01 + Math.random() * 0.02;
+        this.alpha = Math.random() * 0.5 + 0.3;
       }
       update() {
-        this.x += this.speedX + Math.cos(this.angle) * 0.5;
-        this.y += this.speedY + Math.sin(this.angle) * 0.5;
-        this.angle += this.angleSpeed;
-
+        this.x += this.dx;
+        this.y += this.dy;
         if (this.x < -this.r) this.x = bgCanvas.width + this.r;
         if (this.x > bgCanvas.width + this.r) this.x = -this.r;
         if (this.y < -this.r) this.y = bgCanvas.height + this.r;
@@ -356,7 +381,6 @@
       requestAnimationFrame(animateOrbs);
     }
     animateOrbs();
-
   </script>
 </body>
 </html>
