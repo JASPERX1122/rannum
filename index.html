@@ -1,175 +1,226 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>เกมสุ่มเลขสุดฮา</title>
+  <meta charset="UTF-8">
+  <title>เกมสุ่มเลขจากน้อง JASPER!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
     body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #000;
+      font-family: 'Mali', sans-serif;
+      background: radial-gradient(circle at center, #1a1a40, #0d0d1a);
       overflow: hidden;
-      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      user-select: none;
     }
-
     h1 {
-      text-align: center;
-      margin-top: 50px;
-      font-size: 3rem;
-      color: #0ff;
-      text-shadow: 0 0 10px #0ff;
+      font-size: 3em;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
     }
-
-    .container {
-      text-align: center;
-      margin-top: 30px;
-      position: relative;
-      z-index: 10;
+    p {
+      font-size: 1.2em;
+      margin-bottom: 1em;
     }
-
-    .result {
-      font-size: 5rem;
-      margin: 20px 0;
-      color: #ff0;
-      text-shadow: 0 0 20px #ff0;
-    }
-
     button {
-      padding: 15px 30px;
-      font-size: 1.5rem;
-      background: #0f0;
-      color: #000;
+      margin: 10px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      background: #00ffff;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
+      color: #000;
       cursor: pointer;
-      box-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+      box-shadow: 0 0 15px #00ffffaa;
     }
-
-    button:hover {
-      background: #0ff;
-      box-shadow: 0 0 20px #0ff, 0 0 30px #0ff;
+    button:hover:enabled {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #0ff;
     }
-
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.5em;
+      text-align: center;
+      white-space: pre-line;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .score {
+      margin-top: 10px;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px #ff0;
+    }
     .emoji {
       position: fixed;
       font-size: 2rem;
+      z-index: 10;
+      pointer-events: none;
       animation: fall 3s linear forwards;
-      z-index: 999;
     }
-
     @keyframes fall {
-      0% { transform: translateY(-50px); opacity: 1; }
+      0% { transform: translateY(-100px); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
     }
-
-    .firework {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      background: yellow;
-      border-radius: 50%;
-      animation: explode 1s ease-out forwards;
-      z-index: 999;
-      pointer-events: none;
-    }
-
-    @keyframes explode {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(5); opacity: 0; }
-    }
-
-    .rainbow-ball {
+    .orb {
       position: absolute;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      opacity: 0.4;
-      animation: floatBall 20s infinite linear;
+      width: 30px; height: 30px;
+      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+      filter: blur(3px);
+      opacity: 0.7;
+      animation: float 10s infinite ease-in-out;
+    }
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(50vw, 10vh); }
+      50% { transform: translate(-30vw, 30vh); }
+      75% { transform: translate(20vw, -20vh); }
+      100% { transform: translate(0, 0); }
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
       z-index: 1;
       pointer-events: none;
-    }
-
-    @keyframes floatBall {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(30px, -50px); }
-      50% { transform: translate(-50px, 50px); }
-      75% { transform: translate(50px, 30px); }
-      100% { transform: translate(0, 0); }
     }
   </style>
 </head>
 <body>
-  <h1>เกมสุ่มเลข</h1>
-  <div class="container">
-    <div class="result" id="result">?</div>
-    <button onclick="play()">สุ่มเลข!</button>
-  </div>
-
-  <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_5f460e6c66.mp3?filename=yay-6120.mp3"></audio>
-  <audio id="fartSound" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_3f2cd3b3a2.mp3?filename=fart-1-6972.mp3"></audio>
-
+  <h1>🎲 เกมสุ่มเลข!</h1>
+  <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
+  <button id="playBtn">กดสุ่มเลข</button>
+  <button id="resetBtn">รีเซ็ตแต้ม</button>
+  <div id="result">ยังไม่ได้สุ่ม</div>
+  <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
+  <canvas id="canvas"></canvas>
+  <audio id="fartSound" src="fart.mp3"></audio>
+  <audio id="yaySound" src="yay.mp3"></audio>
+  <audio id="bomSound" src="bom.mp3"></audio>
   <script>
-    function play() {
-      const num = Math.floor(Math.random() * 10) + 1;
-      const result = document.getElementById("result");
-      result.textContent = num;
+    const playBtn = document.getElementById("playBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const result = document.getElementById("result");
+    const winCountSpan = document.getElementById("winCount");
+    const loseCountSpan = document.getElementById("loseCount");
+    const fartSound = document.getElementById("fartSound");
+    const yaySound = document.getElementById("yaySound");
+    const bomSound = document.getElementById("bomSound");
 
-      if (num === 7) {
-        document.getElementById("winSound").play();
-        launchFireworks();
-      } else {
-        document.getElementById("fartSound").play();
-        poopRain();
-      }
-    }
+    let win = 0, lose = 0, isCoolingDown = false;
+
+    playBtn.onclick = () => {
+      if (isCoolingDown) return;
+      isCoolingDown = true;
+      result.innerText = "กำลังสุ่ม...";
+
+      setTimeout(() => {
+        const n = Math.floor(Math.random() * 10) + 1;
+        result.innerText = "เลขที่สุ่มได้: " + n;
+        if (n === 1) {
+          result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
+          yaySound.play();
+          bomSound.play();
+          firework();
+          win++;
+        } else {
+          const messages = [
+            "ว้ายแพ้ไอ้กราก!", "ไม่ได้เลข 1 สักที กากว่ะแม่ง!",
+            "โคตรควายเลย555555!", "ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!",
+            "แพ้ทั้งชาติแหละมึงอ่ะ!", "แพ้อีกละ ไอ้ควยยยยยย!",
+            "ดวงซวยหรือดวงด่วงด้วง!", "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
+            "ไอ้ควาย ขี้แพ้555!"
+          ];
+          result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
+          poopRain();
+          fartSound.currentTime = 0;
+          fartSound.play();
+          lose++;
+        }
+        winCountSpan.textContent = win;
+        loseCountSpan.textContent = lose;
+        setTimeout(() => isCoolingDown = false, 2000);
+      }, 800);
+    };
+
+    resetBtn.onclick = () => {
+      win = 0; lose = 0;
+      result.innerText = "ยังไม่ได้สุ่ม";
+      winCountSpan.textContent = win;
+      loseCountSpan.textContent = lose;
+    };
 
     function poopRain() {
       for (let i = 0; i < 20; i++) {
-        let poop = document.createElement("div");
+        const poop = document.createElement("div");
         poop.textContent = "💩";
         poop.className = "emoji";
         poop.style.left = Math.random() * 100 + "vw";
         poop.style.top = "-50px";
-        poop.style.display = "none";
+        poop.style.animationDelay = `${Math.random()}s`;
         document.body.appendChild(poop);
-        requestAnimationFrame(() => {
-          poop.style.display = "block";
-        });
         setTimeout(() => poop.remove(), 3000);
       }
     }
 
-    function launchFireworks() {
-      for (let i = 0; i < 10; i++) {
-        let firework = document.createElement("div");
-        firework.className = "firework";
-        firework.style.left = Math.random() * 100 + "vw";
-        firework.style.top = Math.random() * 100 + "vh";
-        firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        document.body.appendChild(firework);
-        setTimeout(() => firework.remove(), 1000);
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fireworks = [];
+    function firework() {
+      for (let i = 0; i < 30; i++) {
+        fireworks.push({
+          x: canvas.width / 2,
+          y: canvas.height,
+          vx: Math.random() * 6 - 3,
+          vy: -Math.random() * 10 - 5,
+          alpha: 1,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`
+        });
       }
     }
 
-    function createRainbowBalls(count = 20) {
-      for (let i = 0; i < count; i++) {
-        const ball = document.createElement("div");
-        ball.className = "rainbow-ball";
-        ball.style.top = Math.random() * 100 + "vh";
-        ball.style.left = Math.random() * 100 + "vw";
-
-        let hue = Math.random() * 360;
-        setInterval(() => {
-          hue = (hue + 1) % 360;
-          ball.style.background = `hsl(${hue}, 100%, 50%)`;
-        }, 50 + Math.random() * 200);
-
-        document.body.appendChild(ball);
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const fw of fireworks) {
+        fw.x += fw.vx;
+        fw.y += fw.vy;
+        fw.alpha -= 0.02;
+        ctx.globalAlpha = fw.alpha;
+        ctx.fillStyle = fw.color;
+        ctx.beginPath();
+        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
       }
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
     }
+    animate();
 
-    createRainbowBalls();
+    // ลูกไฟสีรุ้ง
+    for (let i = 0; i < 15; i++) {
+      const orb = document.createElement("div");
+      orb.className = "orb";
+      orb.style.top = Math.random() * 100 + "vh";
+      orb.style.left = Math.random() * 100 + "vw";
+      orb.style.animationDuration = `${5 + Math.random() * 10}s`;
+      document.body.appendChild(orb);
+    }
   </script>
 </body>
 </html>
