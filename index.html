@@ -161,11 +161,11 @@
   <div id="result">ยังไม่ได้สุ่ม</div>
   <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
   <div class="links">
-    <a href="https://discord.gg/yourserver" target="_blank" aria-label="Discord" title="Discord">
-      <svg class="discord-icon" viewBox="0 0 245 240" xmlns="http://www.w3.org/2000/svg"><path d="M104.4 103.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.6-11.1-10.2-11.1zm36.1 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.5-11.1-10.2-11.1z"/><path d="M189.5 20H55.6C39.4 20 26.5 32.8 26.5 49.7v111.4c0 16.9 12.9 29.7 29.1 29.7h89.6l-4.2-14.7 10.1 9.4 9.5 8.5 16.8 14.7V49.7c0-16.9-12.9-29.7-29.1-29.7zM171.6 163s-5.1-6.1-9.3-11.6c18.5-5.3 25.5-16.9 25.5-16.9-5.7 3.7-11.1 6.3-16 8.1-6.9 3-13.5 5-20.1 6.1-13.2 2.5-25.3 1.9-35.4-0.8-7.7-1.9-14.3-4.7-19.4-8.1-0.8-0.4-1.7-0.8-2.5-1.3-0.1-0.1-0.2-0.1-0.3-0.2-0.7-0.3-1.1-0.5-1.5-0.7-0.3-0.2-0.4-0.3-0.4-0.3-1.7-1.1-2.6-1.8-2.6-1.8s7 11.2 25.3 16.7c-4.2 5.5-9.5 11.9-9.5 11.9-31.3-1-43.2-21.5-43.2-21.5 0-45.6 20.4-82.6 20.4-82.6 20.4-15.2 39.8-14.8 39.8-14.8l1.4 1.6c-25.6 7.3-37.4 18.3-37.4 18.3s3.1-1.7 8.4-4.1c15.3-6.9 27.3-8.7 32.3-9.2 0.8-0.2 1.5-0.3 2.3-0.3 8.4-1.1 18.2-0.1 28.4 8.4 0 0 17.2 12.7 19.1 39.8z"/></svg>
+    <a href="https://discord.gg/yourserver" target="_blank" title="Discord">
+      <svg class="discord-icon" viewBox="0 0 245 240" xmlns="http://www.w3.org/2000/svg"><path d="M104.4 103.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.6-11.1-10.2-11.1zm36.1 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.5-11.1-10.2-11.1z"/></svg>
     </a>
-    <a href="https://youtube.com/yourchannel" target="_blank" aria-label="YouTube" title="YouTube">
-      <svg class="youtube-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 15l5.19-3L10 9v6zm9-3c0-1.1-.9-2-2-2h-1.77c-.18 0-.35.06-.5.16L14 12l1.73 1.84c.15.1.32.16.5.16H17c1.1 0 2-.9 2-2zM21 6.5v11c0 1.38-1.12 2.5-2.5 2.5h-13C4.12 20 3 18.88 3 17.5v-11C3 5.12 4.12 4 5.5 4h13c1.38 0 2.5 1.12 2.5 2.5z"/></svg>
+    <a href="https://youtube.com/yourchannel" target="_blank" title="YouTube">
+      <svg class="youtube-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 15l5.19-3L10 9v6z"/></svg>
     </a>
   </div>
   <canvas id="canvas"></canvas>
@@ -175,49 +175,86 @@
   <audio id="bomSound" src="bom.mp3"></audio>
 
   <script>
+    const playBtn = document.getElementById("playBtn");
+    const resetBtn = document.getElementById("resetBtn");
     const result = document.getElementById("result");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+    const winCountSpan = document.getElementById("winCount");
+    const loseCountSpan = document.getElementById("loseCount");
     const fartSound = document.getElementById("fartSound");
     const yaySound = document.getElementById("yaySound");
     const bomSound = document.getElementById("bomSound");
-    const winCountSpan = document.getElementById("winCount");
-    const loseCountSpan = document.getElementById("loseCount");
-    const playBtn = document.getElementById("playBtn");
-    const resetBtn = document.getElementById("resetBtn");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
 
-    let win = 0, lose = 0;
     let fartPlaying = false;
-    let cooldown = false;
+    let win = 0, lose = 0;
+    let isCoolingDown = false;
+    const fireworks = [];
 
-    function resize() {
+    function poopRain() {
+      for (let i = 0; i < 20; i++) {
+        let poop = document.createElement("div");
+        poop.textContent = "💩";
+        poop.className = "emoji";
+        poop.style.left = Math.random() * 100 + "vw";
+        poop.style.animationDuration = (2 + Math.random()) + "s";
+        document.body.appendChild(poop);
+        setTimeout(() => poop.remove(), 3000);
+      }
+    }
+
+    function fartBurst() {
+      if (fartPlaying) return;
+      fartPlaying = true;
+      fartSound.currentTime = 0;
+      fartSound.play().catch(() => {}).finally(() => {
+        fartSound.onended = () => {
+          fartPlaying = false;
+          fartSound.onended = null;
+        };
+      });
+    }
+
+    function firework() {
+      for (let i = 0; i < 30; i++) {
+        fireworks.push({
+          x: canvas.width / 2,
+          y: canvas.height,
+          vx: Math.random() * 6 - 3,
+          vy: -Math.random() * 10 - 5,
+          alpha: 1,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`
+        });
+      }
+    }
+
+    function animate() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let fw of fireworks) {
+        fw.x += fw.vx;
+        fw.y += fw.vy;
+        fw.alpha -= 0.02;
+        ctx.globalAlpha = fw.alpha;
+        ctx.fillStyle = fw.color;
+        ctx.beginPath();
+        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(animate);
     }
-    window.onresize = resize;
-    resize();
+    animate();
 
     function play() {
-      if (cooldown) return; // ถ้ากำลังคูลดาวน์ หยุดไม่ให้กดซ้ำ
-
-      cooldown = true;
-      let cdTime = 3; // วินาทีคูลดาวน์
-      playBtn.disabled = true;
-      playBtn.textContent = `รออีก ${cdTime} วินาที...`;
-
-      const cdInterval = setInterval(() => {
-        cdTime--;
-        if (cdTime > 0) {
-          playBtn.textContent = `รออีก ${cdTime} วินาที...`;
-        } else {
-          clearInterval(cdInterval);
-          cooldown = false;
-          playBtn.disabled = false;
-          playBtn.textContent = "กดสุ่มเลข";
-        }
-      }, 1000);
-
+      if (isCoolingDown) return;
+      isCoolingDown = true;
       result.innerText = "กำลังสุ่ม...";
+
       setTimeout(() => {
         let n = Math.floor(Math.random() * 10) + 1;
         result.innerText = "เลขที่สุ่มได้: " + n;
@@ -240,7 +277,7 @@
             "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
             "ไอ้ควาย ขี้แพ้555!"
           ];
-          result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
+          result.innerText += `\n💩 ${messages[n - 2]} 💩`;
           poopRain();
           fartBurst();
           lose++;
@@ -248,9 +285,13 @@
 
         winCountSpan.textContent = win;
         loseCountSpan.textContent = lose;
+        setTimeout(() => {
+          isCoolingDown = false;
+        }, 2000);
       }, 800);
     }
 
+    playBtn.addEventListener("click", play);
     resetBtn.addEventListener("click", () => {
       win = 0;
       lose = 0;
@@ -258,65 +299,6 @@
       loseCountSpan.textContent = lose;
       result.innerText = "ยังไม่ได้สุ่ม";
     });
-
-    function poopRain() {
-      for (let i = 0; i < 20; i++) {
-        let poop = document.createElement("div");
-        poop.textContent = "💩";
-        poop.className = "emoji";
-        poop.style.left = Math.random() * 100 + "vw";
-        poop.style.animationDuration = (2 + Math.random()) + "s";
-        document.body.appendChild(poop);
-        setTimeout(() => poop.remove(), 3000);
-      }
-    }
-
-    // เล่นเสียงตดทีละรอบ
-    function fartBurst() {
-      if (fartPlaying) return;
-      fartPlaying = true;
-      fartSound.currentTime = 0;
-      fartSound.play().catch(() => {}).finally(() => {
-        fartSound.onended = () => {
-          fartPlaying = false;
-          fartSound.onended = null;
-        };
-      });
-    }
-
-    const fireworks = [];
-    function firework() {
-      for (let i = 0; i < 30; i++) {
-        fireworks.push({
-          x: canvas.width / 2,
-          y: canvas.height,
-          vx: Math.random() * 6 - 3,
-          vy: -Math.random() * 10 - 5,
-          alpha: 1,
-          color: `hsl(${Math.random() * 360}, 100%, 50%)`
-        });
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let fw of fireworks) {
-        fw.x += fw.vx;
-        fw.y += fw.vy;
-        fw.alpha -= 0.02;
-        ctx.globalAlpha = fw.alpha;
-        ctx.fillStyle = fw.color;
-        ctx.beginPath();
-        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      for (let i = fireworks.length - 1; i >= 0; i--) {
-        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
-      }
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(animate);
-    }
-    animate();
   </script>
 </body>
 </html>
