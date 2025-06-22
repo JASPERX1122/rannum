@@ -29,9 +29,8 @@
       100% {background-position: 0% 100%;}
     }
 
-    /* กรอบ UI Container */
     #uiContainer {
-      background: rgba(30, 30, 40, 0.7); /* สีขุ่นๆ */
+      background: rgba(30, 30, 40, 0.7);
       border-radius: 20px;
       padding: 30px 40px;
       box-shadow:
@@ -44,7 +43,6 @@
       text-align: center;
       user-select:none;
     }
-    /* ไฟ RGB วิ่งรอบขอบ */
     #uiContainer::before {
       content: "";
       position: absolute;
@@ -141,7 +139,6 @@
       0% { transform: translateY(-100px); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
     }
-    /* ลิงก์ไอคอน */
     .links {
       margin-top: 30px;
       display: flex;
@@ -177,7 +174,6 @@
       fill: #ff0000;
       filter: drop-shadow(0 0 2px #ff0000);
     }
-    /* ลูกไฟสีรุ้งลอยพื้นหลัง */
     #bgCanvas {
       position: fixed;
       top: 0; left: 0;
@@ -186,7 +182,6 @@
       z-index: 0;
       pointer-events: none;
     }
-    /* พลุ */
     #fireworkCanvas {
       position: fixed;
       top: 0; left: 0;
@@ -202,6 +197,7 @@
   <div id="uiContainer">
     <h1>🎲 เกมสุ่มเลข!</h1>
     <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
+    <p>By JASPER X</p>
     <button id="playBtn">กดสุ่มเลข</button>
     <button id="resetBtn">รีเซ็ตแต้ม</button>
     <div id="result">ยังไม่ได้สุ่ม</div>
@@ -258,7 +254,7 @@
             "ดวงซวยหรือดวงด่วงด้วง!", "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
             "ไอ้ควาย ขี้แพ้555!"
           ];
-          result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
+          result.innerText += `\n💩 ${messages[n - 2]} 💩`;
           poopRain();
           fartSound.currentTime = 0;
           fartSound.play();
@@ -282,7 +278,7 @@
         const poop = document.createElement("div");
         poop.textContent = "💩";
         poop.className = "emoji";
-        poop.style.left = Math.random() * 100 + "vw";
+        poop.style.left = Math.random() * 500 + "vw";
         poop.style.top = "-50px";
         poop.style.animationDelay = `${Math.random()}s`;
         document.body.appendChild(poop);
