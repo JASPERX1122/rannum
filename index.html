@@ -88,6 +88,7 @@
   <!-- เสียง -->
   <audio id="fartSound" src="fart.mp3"></audio>
   <audio id="yaySound" src="yay.mp3"></audio>
+  <audio id="bomSound" src="bom.mp3"></audio>
 
   <script>
     const result = document.getElementById("result");
@@ -113,6 +114,7 @@ function play() {
       result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
       firework();
       yaySound.play();
+      bomSound.play();
     } else if (n === 2) {
       result.innerText += "\n💩 ว้ายแพ้ไอ้กราก! 🎆";
       poopRain();
