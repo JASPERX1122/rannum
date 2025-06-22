@@ -1,333 +1,341 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>เกมสุ่มเลขจากน้อง JASPER!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Mali', sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #1a1a40, #0d0d1a);
-      animation: bgmove 10s infinite linear;
-      user-select: none;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>เกมสุ่มเลขจากน้อง JASPER!</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet" />
+<style>
+  /* Reset & font */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Mali', cursive;
+    background: radial-gradient(circle at center, #0f0f20, #050613);
+    color: #0ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
 
-    @keyframes bgmove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+  /* Neon container */
+  .container {
+    background: rgba(0, 255, 255, 0.07);
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow:
+      0 0 10px #0ff,
+      0 0 30px #0ff55,
+      inset 0 0 20px #0ff88;
+    text-align: center;
+    max-width: 400px;
+    width: 90vw;
+    backdrop-filter: blur(12px);
+  }
 
-    h1 {
-      font-size: 3em;
-      margin-bottom: 0.2em;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-    }
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 10px;
+    text-shadow:
+      0 0 5px #0ff,
+      0 0 15px #0ff;
+  }
 
-    p {
-      font-size: 1.3em;
-      margin-bottom: 10px;
-    }
+  p {
+    margin: 0 0 20px;
+    font-size: 1.2rem;
+    color: #0ffccf;
+  }
 
-    button {
-      margin: 10px;
-      padding: 15px 40px;
-      font-size: 1.2em;
-      background: #00ffff;
-      border: none;
-      border-radius: 12px;
-      color: #000;
-      cursor: pointer;
-      box-shadow: 0 0 15px #00ffffaa;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
+  button {
+    cursor: pointer;
+    background: #00ffff;
+    border: none;
+    border-radius: 15px;
+    padding: 15px 35px;
+    font-size: 1.2rem;
+    color: #001010;
+    font-weight: bold;
+    box-shadow:
+      0 0 8px #0ff,
+      0 0 20px #0ffaa;
+    margin: 5px 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  button:hover {
+    transform: scale(1.1);
+    box-shadow:
+      0 0 15px #0ff,
+      0 0 40px #0fff;
+  }
 
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px #00ffff;
-    }
+  #result {
+    margin-top: 25px;
+    font-size: 1.6rem;
+    min-height: 3rem;
+    white-space: pre-line;
+    text-shadow: 0 0 5px #0ff;
+  }
 
-    #result {
-      margin-top: 20px;
-      font-size: 1.5em;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 10px;
-      min-width: 300px;
-      text-align: center;
-      white-space: pre-line;
-      box-shadow: 0 0 15px #ffffff22;
-    }
+  .score {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff;
+  }
 
-    .score {
-      margin-top: 10px;
-      font-size: 1.2em;
-      text-shadow: 0 0 5px #ff0;
-    }
+  /* Links container */
+  .links {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
 
-    .emoji {
-      position: fixed;
-      font-size: 2rem;
-      animation: fall 3s linear infinite;
-      z-index: 10;
-    }
+  /* Link icons style */
+  .link-icon {
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(0 0 3px #0ff);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .link-icon:hover {
+    transform: scale(1.2) rotate(15deg);
+    filter: drop-shadow(0 0 10px #0ff);
+  }
 
-    @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
+  /* Emoji poop falling */
+  .emoji {
+    position: fixed;
+    font-size: 2rem;
+    animation: fall 3s linear forwards;
+    z-index: 50;
+    pointer-events: none;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-150px); opacity: 1; }
+    100% { transform: translateY(110vh); opacity: 0; }
+  }
 
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      pointer-events: none;
-      z-index: 5;
-    }
+  /* Canvas fireworks and floating balls */
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-    /* -- กรอบสี่เหลี่ยมใสๆ มนๆ ที่ครอบลิงก์ -- */
-    .links-wrapper {
-      margin-top: 30px;
-      background: rgba(0, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 10px 25px;
-      box-shadow: 0 0 20px #00ffff88;
-      display: flex;
-      gap: 25px;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-    }
-
-    /* -- ไอคอนลิงก์แบบนีออนง่ายๆ -- */
-    .link-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #00ffff22;
-      border: 2px solid #00ffff;
-      box-shadow:
-        0 0 8px #00ffff88,
-        0 0 15px #00ffffcc,
-        0 0 25px #00ffffee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: box-shadow 0.3s, transform 0.2s;
-      filter: drop-shadow(0 0 3px #00ffffaa);
-    }
-
-    .link-icon:hover {
-      box-shadow:
-        0 0 15px #00ffffff,
-        0 0 35px #00ffffff,
-        0 0 55px #00ffffff;
-      transform: scale(1.15);
-    }
-
-    /* -- ไอคอน SVG สีฟ้าแบบง่ายๆ (Discord & YouTube) -- */
-    svg {
-      fill: #00ffff;
-      width: 26px;
-      height: 26px;
-    }
-
-    /* -- ลูกไฟสีรุ้งกลมๆ ลอยเบลอพื้นหลัง -- */
-    .floating-fireball {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(6px);
-      opacity: 0.3;
-      animation-timing-function: linear;
-      pointer-events: none;
-      z-index: 0;
-    }
-  </style>
+  /* Floating neon rainbow balls in background */
+  .floating-ball {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.3;
+    animation: floatUpDown linear infinite alternate;
+    z-index: 0;
+  }
+  @keyframes floatUpDown {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-30px); }
+  }
+</style>
 </head>
 <body>
+
+<div class="container">
   <h1>🎲 เกมสุ่มเลข!</h1>
   <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
-  <button onclick="play()">กดสุ่มเลข</button>
-  <button onclick="resetScore()">รีเซ็ตแต้ม</button>
+  <button id="playBtn">กดสุ่มเลข</button>
+  <button id="resetBtn">รีเซ็ตแต้ม</button>
+
   <div id="result">ยังไม่ได้สุ่ม</div>
   <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
 
-  <div class="links-wrapper" aria-label="ลิงก์ Discord และ YouTube">
-    <a href="https://discord.gg/yourserver" target="_blank" rel="noopener noreferrer" class="link-icon" aria-label="Discord">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M20.317 4.3698a19.791 19.791 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0786-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0813.0095c.12.0991.246.1971.372.2914a.0766.0766 0 0 1-.0064.1277 12.2986 12.2986 0 0 1-1.873.8924.0766.0766 0 0 0-.0407.106c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.95-1.5219 6.003-3.0294a.0823.0823 0 0 0 .03-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.0617.0617 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.4189 0 1.3333-.9555 2.419-2.1569 2.419zm7.9748 0c-1.1824 0-2.1568-1.0857-2.1568-2.419 0-1.3332.9544-2.4189 2.1569-2.4189 1.211 0 2.176.95 2.157 2.4189 0 1.3333-.946 2.419-2.157 2.419z"></path>
-      </svg>
+  <div class="links" aria-label="ลิงก์โซเชียล">
+    <a href="https://discord.gg/yourserver" target="_blank" aria-label="Discord">
+      <img class="link-icon" src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord icon" />
     </a>
-
-    <a href="https://youtube.com/yourchannel" target="_blank" rel="noopener noreferrer" class="link-icon" aria-label="YouTube">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M19.615 3.184c-1.496-.11-7.567-.11-7.567-.11s-6.07 0-7.566.11c-1.663.123-2.802 1.54-2.917 3.346-.117 1.91-.117 5.894-.117 5.894s0 3.985.117 5.894c.115 1.806 1.254 3.223 2.917 3.346 1.497.11 7.566.11 7.566.11s6.07 0 7.566-.11c1.663-.123 2.801-1.54 2.916-3.346.118-1.91.118-5.894.118-5.894s0-3.985-.118-5.894c-.115-1.806-1.253-3.223-2.916-3.346zm-11.615 8.015v-5.69l5.345 2.844-5.345 2.846z"></path>
-      </svg>
+    <a href="https://youtube.com/yourchannel" target="_blank" aria-label="YouTube">
+      <img class="link-icon" src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube icon" />
     </a>
   </div>
+</div>
 
-  <!-- ลูกไฟสีรุ้งกลมๆลอยพื้นหลัง -->
-  <script>
-    const colors = [
-      'rgba(255,0,255,0.6)',
-      'rgba(0,255,255,0.6)',
-      'rgba(255,255,0,0.6)',
-      'rgba(0,255,0,0.6)',
-      'rgba(255,0,0,0.6)',
-      'rgba(0,0,255,0.6)'
-    ];
+<canvas id="canvas"></canvas>
 
-    function randomBetween(min, max) {
-      return Math.random() * (max - min) + min;
+<!-- เสียง preload -->
+<audio id="fartSound" src="fart.mp3" preload="auto"></audio>
+<audio id="yaySound" src="yay.mp3" preload="auto"></audio>
+<audio id="bomSound" src="bom.mp3" preload="auto"></audio>
+
+<script>
+  const result = document.getElementById('result');
+  const winCountSpan = document.getElementById('winCount');
+  const loseCountSpan = document.getElementById('loseCount');
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const fartSound = document.getElementById('fartSound');
+  const yaySound = document.getElementById('yaySound');
+  const bomSound = document.getElementById('bomSound');
+
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let win = 0;
+  let lose = 0;
+  let fireworks = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function createPoop() {
+    const poop = document.createElement('div');
+    poop.textContent = '💩';
+    poop.className = 'emoji';
+    poop.style.left = Math.random() * 100 + 'vw';
+    poop.style.animationDuration = (2 + Math.random() * 2) + 's';
+    document.body.appendChild(poop);
+    setTimeout(() => poop.remove(), 3000);
+  }
+
+  function poopRain() {
+    for (let i = 0; i < 20; i++) {
+      setTimeout(createPoop, i * 150);
     }
+  }
 
-    for (let i = 0; i < 12; i++) {
-      const fireball = document.createElement('div');
-      fireball.classList.add('floating-fireball');
-      fireball.style.width = fireball.style.height = randomBetween(40, 80) + 'px';
-      fireball.style.left = randomBetween(0, 100) + 'vw';
-      fireball.style.top = randomBetween(0, 100) + 'vh';
-      fireball.style.background = colors[i % colors.length];
-      fireball.style.animationDuration = randomBetween(10, 20) + 's';
-      fireball.style.animationName = 'floatAround' + i;
-      document.body.appendChild(fireball);
-
-      // สร้าง keyframe animation แบบไดนามิก
-      const styleSheet = document.styleSheets[0];
-      const keyframes = `
-        @keyframes floatAround${i} {
-          0% { transform: translate(0, 0); }
-          50% { transform: translate(${randomBetween(-20,20)}px, ${randomBetween(-20,20)}px); }
-          100% { transform: translate(0, 0); }
-        }
-      `;
-      styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-    }
-  </script>
-
-  <!-- โค้ดเกมสุ่มเลขเดิม รวมการนับแต้มและเอฟเฟกต์ -->
-  <script>
-    const result = document.getElementById('result');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const fartSound = new Audio('fart.mp3');
-    const yaySound = new Audio('yay.mp3');
-    const bomSound = new Audio('bom.mp3');
-    const winCountSpan = document.getElementById('winCount');
-    const loseCountSpan = document.getElementById('loseCount');
-
-    let win = 0, lose = 0;
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.onresize = resize;
-    resize();
-
-    function play() {
-      result.innerText = 'กำลังสุ่ม...';
+  function fartBurst() {
+    for (let i = 0; i < 5; i++) {
       setTimeout(() => {
-        let n = Math.floor(Math.random() * 10) + 1;
-        result.innerText = 'เลขที่สุ่มได้: ' + n;
-
-        if (n === 1) {
-          result.innerText += '\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆';
-          firework();
-          yaySound.play();
-          bomSound.play();
-          win++;
-        } else {
-          const messages = [
-            'ว้ายแพ้ไอ้กราก!',
-            'ไม่ได้เลข 1 สักที กากว่ะแม่ง!',
-            'โคตรควายเลย555555!',
-            'ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!',
-            'แพ้ทั้งชาติแหละมึงอ่ะ!',
-            'แพ้อีกละ ไอ้ควยยยยยย!',
-            'ดวงซวยหรือดวงด่วงด้วง!',
-            'แพ้เกมแค่นี้จะชนะใจเขาได้ไง!',
-            'ไอ้ควาย ขี้แพ้555!'
-          ];
-          result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
-          poopRain();
-          fartBurst();
-          lose++;
-        }
-
-        winCountSpan.textContent = win;
-        loseCountSpan.textContent = lose;
-      }, 800);
+        fartSound.currentTime = 0;
+        fartSound.play().catch(e => {});
+      }, i * 400);
     }
+  }
 
-    function resetScore() {
-      win = 0;
-      lose = 0;
+  function firework() {
+    for (let i = 0; i < 30; i++) {
+      fireworks.push({
+        x: canvas.width / 2,
+        y: canvas.height,
+        vx: (Math.random() * 6) - 3,
+        vy: -(Math.random() * 10 + 5),
+        alpha: 1,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+        radius: 4 + Math.random() * 3,
+      });
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = fireworks.length - 1; i >= 0; i--) {
+      const f = fireworks[i];
+      f.x += f.vx;
+      f.y += f.vy;
+      f.alpha -= 0.02;
+      f.vy += 0.15; // gravity
+
+      ctx.globalAlpha = f.alpha;
+      ctx.fillStyle = f.color;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (f.alpha <= 0) {
+        fireworks.splice(i, 1);
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  function play() {
+    result.textContent = 'กำลังสุ่ม...';
+    playBtn.disabled = true;
+    setTimeout(() => {
+      let n = Math.floor(Math.random() * 10) + 1;
+      result.textContent = 'เลขที่สุ่มได้: ' + n;
+
+      if (n === 1) {
+        result.textContent += '\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆';
+        firework();
+        yaySound.currentTime = 0;
+        yaySound.play().catch(e => {});
+        bomSound.currentTime = 0;
+        bomSound.play().catch(e => {});
+        win++;
+      } else {
+        const messages = [
+          'ว้ายแพ้ไอ้กราก!',
+          'ไม่ได้เลข 1 สักที กากว่ะแม่ง!',
+          'โคตรควายเลย555555!',
+          'ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!',
+          'แพ้ทั้งชาติแหละมึงอ่ะ!',
+          'แพ้อีกละ ไอ้ควยยยยยย!',
+          'ดวงซวยหรือดวงด่วงด้วง!',
+          'แพ้เกมแค่นี้จะชนะใจเขาได้ไง!',
+          'ไอ้ควาย ขี้แพ้555!',
+        ];
+        result.textContent += `\n💩 ${messages[n - 2]} 🎆`;
+        poopRain();
+        fartBurst();
+        lose++;
+      }
+
       winCountSpan.textContent = win;
       loseCountSpan.textContent = lose;
-      result.innerText = 'ยังไม่ได้สุ่ม';
-    }
+      playBtn.disabled = false;
+    }, 900);
+  }
 
-    function poopRain() {
-      for (let i = 0; i < 20; i++) {
-        let poop = document.createElement('div');
-        poop.textContent = '💩';
-        poop.className = 'emoji';
-        poop.style.left = Math.random() * 100 + 'vw';
-        poop.style.animationDuration = (2 + Math.random()) + 's';
-        document.body.appendChild(poop);
-        setTimeout(() => poop.remove(), 3000);
-      }
-    }
+  function resetScore() {
+    win = 0;
+    lose = 0;
+    winCountSpan.textContent = win;
+    loseCountSpan.textContent = lose;
+    result.textContent = 'ยังไม่ได้สุ่ม';
+  }
 
-    function fartBurst() {
-      for (let i = 0; i < 5; i++) {
-        setTimeout(() => fartSound.play(), i * 400);
-      }
-    }
+  resetBtn.addEventListener('click', resetScore);
+  playBtn.addEventListener('click', play);
 
-    const fireworks = [];
-    function firework() {
-      for (let i = 0; i < 30; i++) {
-        fireworks.push({
-          x: canvas.width / 2,
-          y: canvas.height,
-          vx: Math.random() * 6 - 3,
-          vy: -Math.random() * 10 - 5,
-          alpha: 1,
-          color: `hsl(${Math.random() * 360}, 100%, 50%)`
-        });
-      }
-    }
+  // สร้างลูกไฟสีรุ้งลอยขึ้นลอยลงเบลอพื้นหลัง
+  function createFloatingBall() {
+    const ball = document.createElement('div');
+    ball.classList.add('floating-ball');
+    ball.style.width = (20 + Math.random() * 30) + 'px';
+    ball.style.height = ball.style.width;
+    ball.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+    ball.style.left = Math.random() * 100 + 'vw';
+    ball.style.bottom = -30 + 'px';
+    ball.style.animationDuration = (6 + Math.random() * 6) + 's';
+    document.body.appendChild(ball);
 
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let fw of fireworks) {
-        fw.x += fw.vx;
-        fw.y += fw.vy;
-        fw.alpha -= 0.02;
-        ctx.globalAlpha = fw.alpha;
-        ctx.fillStyle = fw.color;
-        ctx.beginPath();
-        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      for (let i = fireworks.length - 1; i >= 0; i--) {
-        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
-      }
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(animate);
-    }
-    animate();
-  </script>
+    // ลบลูกบอลหลังจบแอนิเมชัน
+    setTimeout(() => ball.remove(), parseFloat(ball.style.animationDuration) * 1000);
+  }
+
+  // สร้างลูกไฟลอยเรื่อยๆ
+  setInterval(() => {
+    createFloatingBall();
+  }, 500);
+</script>
+
 </body>
 </html>
