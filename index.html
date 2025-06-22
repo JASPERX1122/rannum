@@ -29,7 +29,7 @@
     }
 
     button {
-      margin-top: 20px;
+      margin: 10px;
       padding: 15px 40px;
       font-size: 1.5em;
       background: #ff6f61;
@@ -41,14 +41,19 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    button:hover {
+    button:hover:enabled {
       transform: scale(1.05);
       box-shadow: 0 0 25px #ff6f61;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     #result {
-      margin-top: 30px;
-      font-size: 2em;
+      margin-top: 20px;
+      font-size: 1.7em;
       background: rgba(255, 255, 255, 0.1);
       padding: 20px;
       border-radius: 10px;
@@ -83,7 +88,7 @@
   <h1>🎲 เกมสุ่มเลข!</h1>
   <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
   <p>By JASPER X</p>
-  <button onclick="play()">กดสุ่มเลข</button>
+  <button onclick="play(event)">กดสุ่มเลข</button>
   <button onclick="location.reload()">รีเซ็ต</button>
   <div id="result">ยังไม่ได้สุ่ม</div>
   <canvas id="canvas"></canvas>
@@ -91,6 +96,7 @@
   <!-- เสียง -->
   <audio id="fartSound" src="fart.mp3"></audio>
   <audio id="yaySound" src="yay.mp3"></audio>
+  <audio id="bgm" src="bgm.mp3" loop></audio>
 
   <script>
     const result = document.getElementById("result");
@@ -98,6 +104,10 @@
     const ctx = canvas.getContext("2d");
     const fartSound = document.getElementById("fartSound");
     const yaySound = document.getElementById("yaySound");
+    const bgm = document.getElementById("bgm");
+
+    let winCount = 0;
+    let playCount = 0;
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -119,12 +129,22 @@
       10: "💩 ไอ้ควาย ขี้แพ้55555555! 💩"
     };
 
-    function play() {
+    function play(event) {
+      const button = event.target;
+      button.disabled = true;
+
+      // เปิดเพลงแบ็คกราวด์รอบแรกที่กด
+      bgm.play().catch(() => {});
+
       result.innerText = "กำลังสุ่ม...";
       setTimeout(() => {
         const n = Math.floor(Math.random() * 10) + 1;
         const msg = messages[n] || "💩 แพ้ไปเถอะไอ้ควย โคตรกาก!";
-        result.innerText = "เลขที่สุ่มได้: " + n + "\n" + msg;
+        playCount++;
+        if (n === 1) winCount++;
+
+        result.innerText = "เลขที่สุ่มได้: " + n + "\n" + msg +
+          `\n\nเล่นไปแล้ว: ${playCount} ครั้ง\nชนะ: ${winCount} ครั้ง`;
 
         if (n === 1) {
           firework();
@@ -133,6 +153,8 @@
           poopRain();
           fartBurst();
         }
+
+        setTimeout(() => button.disabled = false, 2000);
       }, 800);
     }
 
