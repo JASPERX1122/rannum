@@ -2,194 +2,127 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>เกมสุ่มเลขจากน้อง JASPER!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>เกมสุ่มเลขสุดฮา</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Mali', sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: 'Arial', sans-serif;
+      background-color: #000;
       overflow: hidden;
-      background: radial-gradient(circle at center, #1a1a40, #0d0d1a);
-      animation: bgmove 10s infinite linear;
-      position: relative;
-      user-select: none;
-    }
-
-    @keyframes bgmove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      color: #fff;
     }
 
     h1 {
-      font-size: 3em;
-      margin-bottom: 0.2em;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-      z-index: 20;
-      position: relative;
+      text-align: center;
+      margin-top: 50px;
+      font-size: 3rem;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
     }
 
-    p {
-      font-size: 1.3em;
-      z-index: 20;
+    .container {
+      text-align: center;
+      margin-top: 30px;
       position: relative;
+      z-index: 10;
+    }
+
+    .result {
+      font-size: 5rem;
+      margin: 20px 0;
+      color: #ff0;
+      text-shadow: 0 0 20px #ff0;
     }
 
     button {
-      margin: 10px;
-      padding: 15px 40px;
-      font-size: 1.2em;
-      background: #00ffff;
-      border: none;
-      border-radius: 12px;
+      padding: 15px 30px;
+      font-size: 1.5rem;
+      background: #0f0;
       color: #000;
-      cursor: pointer;
-      box-shadow: 0 0 15px #00ffffaa;
-      transition: transform 0.2s, box-shadow 0.2s;
-      z-index: 20;
-      position: relative;
-      user-select: none;
-    }
-
-    button:hover:enabled {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px #00ffff;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      box-shadow: none;
-      transform: none;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 1.5em;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
+      border: none;
       border-radius: 10px;
-      min-width: 300px;
-      text-align: center;
-      white-space: pre-line;
-      box-shadow: 0 0 15px #ffffff22;
-      z-index: 20;
-      position: relative;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
     }
 
-    .score {
-      margin-top: 10px;
-      font-size: 1.2em;
-      text-shadow: 0 0 5px #ff0;
-      z-index: 20;
-      position: relative;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    .links {
-      margin-top: 30px;
-      font-size: 1.8em;
-      display: flex;
-      gap: 30px;
-      z-index: 20;
-      position: relative;
-    }
-
-    .links a {
-      color: #0ff;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      border: 2px solid #0ff;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0ff88;
-      transition: box-shadow 0.3s;
-    }
-    .links a:hover {
-      box-shadow: 0 0 25px #0ff;
-    }
-
-    .discord-icon {
-      width: 24px;
-      height: 24px;
-      fill: #7289da;
-      filter: drop-shadow(0 0 2px #7289da);
-    }
-    .youtube-icon {
-      width: 24px;
-      height: 24px;
-      fill: #ff0000;
-      filter: drop-shadow(0 0 2px #ff0000);
+    button:hover {
+      background: #0ff;
+      box-shadow: 0 0 20px #0ff, 0 0 30px #0ff;
     }
 
     .emoji {
       position: fixed;
       font-size: 2rem;
-      animation: fall 3s linear;
-      z-index: 10;
-      user-select: none;
-      pointer-events: none;
+      animation: fall 3s linear forwards;
+      z-index: 999;
     }
 
     @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 1; }
+      0% { transform: translateY(-50px); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    .firework {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: yellow;
+      border-radius: 50%;
+      animation: explode 1s ease-out forwards;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(5); opacity: 0; }
+    }
+
+    .rainbow-ball {
+      position: absolute;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      opacity: 0.4;
+      animation: floatBall 20s infinite linear;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes floatBall {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(30px, -50px); }
+      50% { transform: translate(-50px, 50px); }
+      75% { transform: translate(50px, 30px); }
+      100% { transform: translate(0, 0); }
     }
   </style>
 </head>
 <body>
-  <h1>🎲 เกมสุ่มเลข!</h1>
-  <p>ถ้าได้เลข 1 = ชนะ 🎉</p>
-  <button id="playBtn">กดสุ่มเลข</button>
-  <button id="resetBtn">รีเซ็ตแต้ม</button>
-  <div id="result">ยังไม่ได้สุ่ม</div>
-  <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
-  <div class="links">
-    <a href="https://discord.gg/yourserver" target="_blank" title="Discord">
-      <svg class="discord-icon" viewBox="0 0 245 240" xmlns="http://www.w3.org/2000/svg"><path d="M104.4 103.5c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.6-11.1-10.2-11.1zm36.1 0c-5.7 0-10.2 5-10.2 11.1s4.6 11.1 10.2 11.1c5.7 0 10.3-5 10.2-11.1 0-6.1-4.5-11.1-10.2-11.1z"/></svg>
-    </a>
-    <a href="https://youtube.com/yourchannel" target="_blank" title="YouTube">
-      <svg class="youtube-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 15l5.19-3L10 9v6z"/></svg>
-    </a>
+  <h1>เกมสุ่มเลข</h1>
+  <div class="container">
+    <div class="result" id="result">?</div>
+    <button onclick="play()">สุ่มเลข!</button>
   </div>
-  <canvas id="canvas"></canvas>
 
-  <audio id="fartSound" src="fart.mp3"></audio>
-  <audio id="yaySound" src="yay.mp3"></audio>
-  <audio id="bomSound" src="bom.mp3"></audio>
+  <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_5f460e6c66.mp3?filename=yay-6120.mp3"></audio>
+  <audio id="fartSound" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_3f2cd3b3a2.mp3?filename=fart-1-6972.mp3"></audio>
 
   <script>
-    const playBtn = document.getElementById("playBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const result = document.getElementById("result");
-    const winCountSpan = document.getElementById("winCount");
-    const loseCountSpan = document.getElementById("loseCount");
-    const fartSound = document.getElementById("fartSound");
-    const yaySound = document.getElementById("yaySound");
-    const bomSound = document.getElementById("bomSound");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+    function play() {
+      const num = Math.floor(Math.random() * 10) + 1;
+      const result = document.getElementById("result");
+      result.textContent = num;
 
-    let fartPlaying = false;
-    let win = 0, lose = 0;
-    let isCoolingDown = false;
-    const fireworks = [];
+      if (num === 7) {
+        document.getElementById("winSound").play();
+        launchFireworks();
+      } else {
+        document.getElementById("fartSound").play();
+        poopRain();
+      }
+    }
 
     function poopRain() {
       for (let i = 0; i < 20; i++) {
@@ -197,108 +130,46 @@
         poop.textContent = "💩";
         poop.className = "emoji";
         poop.style.left = Math.random() * 100 + "vw";
-        poop.style.animationDuration = (2 + Math.random()) + "s";
+        poop.style.top = "-50px";
+        poop.style.display = "none";
         document.body.appendChild(poop);
+        requestAnimationFrame(() => {
+          poop.style.display = "block";
+        });
         setTimeout(() => poop.remove(), 3000);
       }
     }
 
-    function fartBurst() {
-      if (fartPlaying) return;
-      fartPlaying = true;
-      fartSound.currentTime = 0;
-      fartSound.play().catch(() => {}).finally(() => {
-        fartSound.onended = () => {
-          fartPlaying = false;
-          fartSound.onended = null;
-        };
-      });
-    }
-
-    function firework() {
-      for (let i = 0; i < 30; i++) {
-        fireworks.push({
-          x: canvas.width / 2,
-          y: canvas.height,
-          vx: Math.random() * 6 - 3,
-          vy: -Math.random() * 10 - 5,
-          alpha: 1,
-          color: `hsl(${Math.random() * 360}, 100%, 50%)`
-        });
+    function launchFireworks() {
+      for (let i = 0; i < 10; i++) {
+        let firework = document.createElement("div");
+        firework.className = "firework";
+        firework.style.left = Math.random() * 100 + "vw";
+        firework.style.top = Math.random() * 100 + "vh";
+        firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        document.body.appendChild(firework);
+        setTimeout(() => firework.remove(), 1000);
       }
     }
 
-    function animate() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let fw of fireworks) {
-        fw.x += fw.vx;
-        fw.y += fw.vy;
-        fw.alpha -= 0.02;
-        ctx.globalAlpha = fw.alpha;
-        ctx.fillStyle = fw.color;
-        ctx.beginPath();
-        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
-        ctx.fill();
+    function createRainbowBalls(count = 20) {
+      for (let i = 0; i < count; i++) {
+        const ball = document.createElement("div");
+        ball.className = "rainbow-ball";
+        ball.style.top = Math.random() * 100 + "vh";
+        ball.style.left = Math.random() * 100 + "vw";
+
+        let hue = Math.random() * 360;
+        setInterval(() => {
+          hue = (hue + 1) % 360;
+          ball.style.background = `hsl(${hue}, 100%, 50%)`;
+        }, 50 + Math.random() * 200);
+
+        document.body.appendChild(ball);
       }
-      for (let i = fireworks.length - 1; i >= 0; i--) {
-        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
-      }
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    function play() {
-      if (isCoolingDown) return;
-      isCoolingDown = true;
-      result.innerText = "กำลังสุ่ม...";
-
-      setTimeout(() => {
-        let n = Math.floor(Math.random() * 10) + 1;
-        result.innerText = "เลขที่สุ่มได้: " + n;
-
-        if (n === 1) {
-          result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
-          firework();
-          yaySound.play();
-          bomSound.play();
-          win++;
-        } else {
-          const messages = [
-            "ว้ายแพ้ไอ้กราก!",
-            "ไม่ได้เลข 1 สักที กากว่ะแม่ง!",
-            "โคตรควายเลย555555!",
-            "ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!",
-            "แพ้ทั้งชาติแหละมึงอ่ะ!",
-            "แพ้อีกละ ไอ้ควยยยยยย!",
-            "ดวงซวยหรือดวงด่วงด้วง!",
-            "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
-            "ไอ้ควาย ขี้แพ้555!"
-          ];
-          result.innerText += `\n💩 ${messages[n - 2]} 💩`;
-          poopRain();
-          fartBurst();
-          lose++;
-        }
-
-        winCountSpan.textContent = win;
-        loseCountSpan.textContent = lose;
-        setTimeout(() => {
-          isCoolingDown = false;
-        }, 2000);
-      }, 800);
     }
 
-    playBtn.addEventListener("click", play);
-    resetBtn.addEventListener("click", () => {
-      win = 0;
-      lose = 0;
-      winCountSpan.textContent = win;
-      loseCountSpan.textContent = lose;
-      result.innerText = "ยังไม่ได้สุ่ม";
-    });
+    createRainbowBalls();
   </script>
 </body>
 </html>
