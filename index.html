@@ -19,14 +19,19 @@
       height: 100vh;
       color: white;
       user-select: none;
+      position: relative;
     }
     h1 {
       font-size: 3em;
       text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+      z-index: 20;
+      position: relative;
     }
     p {
       font-size: 1.2em;
       margin-bottom: 1em;
+      z-index: 20;
+      position: relative;
     }
     button {
       margin: 10px;
@@ -38,6 +43,10 @@
       color: #000;
       cursor: pointer;
       box-shadow: 0 0 15px #00ffffaa;
+      position: relative;
+      z-index: 20;
+      user-select: none;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover:enabled {
       transform: scale(1.05);
@@ -55,43 +64,41 @@
       padding: 10px 20px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
+      position: relative;
+      z-index: 20;
     }
     .score {
       margin-top: 10px;
       font-size: 1.2em;
       text-shadow: 0 0 5px #ff0;
+      position: relative;
+      z-index: 20;
     }
     .emoji {
       position: fixed;
       font-size: 2rem;
-      z-index: 10;
+      z-index: 15;
       pointer-events: none;
       animation: fall 3s linear forwards;
+      user-select: none;
     }
     @keyframes fall {
       0% { transform: translateY(-100px); opacity: 1; }
       100% { transform: translateY(100vh); opacity: 0; }
     }
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      width: 30px; height: 30px;
-      background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
-      filter: blur(3px);
-      opacity: 0.7;
-      animation: float 10s infinite ease-in-out;
-    }
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(50vw, 10vh); }
-      50% { transform: translate(-30vw, 30vh); }
-      75% { transform: translate(20vw, -20vh); }
-      100% { transform: translate(0, 0); }
-    }
-    canvas {
+    /* ลูกไฟสีรุ้งพื้นหลัง */
+    canvas#bgParticles {
       position: fixed;
       top: 0; left: 0;
-      z-index: 1;
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(5px);
+    }
+    /* พลุไฟ */
+    canvas#canvas {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 10;
       pointer-events: none;
     }
   </style>
@@ -103,161 +110,170 @@
   <button id="resetBtn">รีเซ็ตแต้ม</button>
   <div id="result">ยังไม่ได้สุ่ม</div>
   <div class="score">ชนะ: <span id="winCount">0</span> | แพ้: <span id="loseCount">0</span></div>
+
+  <canvas id="bgParticles"></canvas>
   <canvas id="canvas"></canvas>
+
   <audio id="fartSound" src="fart.mp3"></audio>
   <audio id="yaySound" src="yay.mp3"></audio>
   <audio id="bomSound" src="bom.mp3"></audio>
-  <script>
-    const playBtn = document.getElementById("playBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const result = document.getElementById("result");
-    const winCountSpan = document.getElementById("winCount");
-    const loseCountSpan = document.getElementById("loseCount");
-    const fartSound = document.getElementById("fartSound");
-    const yaySound = document.getElementById("yaySound");
-    const bomSound = document.getElementById("bomSound");
 
-    let win = 0, lose = 0, isCoolingDown = false;
+<script>
+  // เริ่มต้นตัวแปร DOM
+  const playBtn = document.getElementById("playBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const result = document.getElementById("result");
+  const winCountSpan = document.getElementById("winCount");
+  const loseCountSpan = document.getElementById("loseCount");
+  const fartSound = document.getElementById("fartSound");
+  const yaySound = document.getElementById("yaySound");
+  const bomSound = document.getElementById("bomSound");
 
-    playBtn.onclick = () => {
-      if (isCoolingDown) return;
-      isCoolingDown = true;
-      result.innerText = "กำลังสุ่ม...";
+  // ตัวนับแต้ม + cooldown flag
+  let win = 0, lose = 0, isCoolingDown = false;
 
-      setTimeout(() => {
-        const n = Math.floor(Math.random() * 10) + 1;
-        result.innerText = "เลขที่สุ่มได้: " + n;
-        if (n === 1) {
-          result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
-          yaySound.play();
-          bomSound.play();
-          firework();
-          win++;
-        } else {
-          const messages = [
-            "ว้ายแพ้ไอ้กราก!", "ไม่ได้เลข 1 สักที กากว่ะแม่ง!",
-            "โคตรควายเลย555555!", "ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!",
-            "แพ้ทั้งชาติแหละมึงอ่ะ!", "แพ้อีกละ ไอ้ควยยยยยย!",
-            "ดวงซวยหรือดวงด่วงด้วง!", "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
-            "ไอ้ควาย ขี้แพ้555!"
-          ];
-          result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
-          poopRain();
-          fartSound.currentTime = 0;
-          fartSound.play();
-          lose++;
-        }
-        winCountSpan.textContent = win;
-        loseCountSpan.textContent = lose;
-        setTimeout(() => isCoolingDown = false, 2000);
-      }, 800);
-    };
+  // ปุ่มสุ่มเลข
+  playBtn.onclick = () => {
+    if (isCoolingDown) return;
+    isCoolingDown = true;
+    result.innerText = "กำลังสุ่ม...";
 
-    resetBtn.onclick = () => {
-      win = 0; lose = 0;
-      result.innerText = "ยังไม่ได้สุ่ม";
+    setTimeout(() => {
+      const n = Math.floor(Math.random() * 10) + 1;
+      result.innerText = "เลขที่สุ่มได้: " + n;
+      if (n === 1) {
+        result.innerText += "\n🎉 ชนะเฉย ถึงชนะกูได้ก็ชนะใจเขาไม่ได้หรอก! 🎆";
+        yaySound.play();
+        bomSound.play();
+        firework();
+        win++;
+      } else {
+        const messages = [
+          "ว้ายแพ้ไอ้กราก!", "ไม่ได้เลข 1 สักที กากว่ะแม่ง!",
+          "โคตรควายเลย555555!", "ไอ้ขี้แพ้ เกมโง่ๆยังแพ้!",
+          "แพ้ทั้งชาติแหละมึงอ่ะ!", "แพ้อีกละ ไอ้ควยยยยยย!",
+          "ดวงซวยหรือดวงด่วงด้วง!", "แพ้เกมแค่นี้จะชนะใจเขาได้ไง!",
+          "ไอ้ควาย ขี้แพ้555!"
+        ];
+        result.innerText += `\n💩 ${messages[n - 2]} 🎆`;
+        poopRain();
+        fartSound.currentTime = 0;
+        fartSound.play();
+        lose++;
+      }
       winCountSpan.textContent = win;
       loseCountSpan.textContent = lose;
-    };
+      setTimeout(() => isCoolingDown = false, 2000);
+    }, 800);
+  };
 
-    function poopRain() {
-      for (let i = 0; i < 20; i++) {
-        const poop = document.createElement("div");
-        poop.textContent = "💩";
-        poop.className = "emoji";
-        poop.style.left = Math.random() * 100 + "vw";
-        poop.style.top = "-50px";
-        poop.style.animationDelay = `${Math.random()}s`;
-        document.body.appendChild(poop);
-        setTimeout(() => poop.remove(), 3000);
-      }
+  resetBtn.onclick = () => {
+    win = 0; lose = 0;
+    result.innerText = "ยังไม่ได้สุ่ม";
+    winCountSpan.textContent = win;
+    loseCountSpan.textContent = lose;
+  };
+
+  // สร้างอิโมจิขี้ตกลงมา
+  function poopRain() {
+    for (let i = 0; i < 20; i++) {
+      const poop = document.createElement("div");
+      poop.textContent = "💩";
+      poop.className = "emoji";
+      poop.style.left = Math.random() * 100 + "vw";
+      poop.style.top = "-50px";
+      poop.style.animationDelay = `${Math.random()}s`;
+      document.body.appendChild(poop);
+      setTimeout(() => poop.remove(), 3000);
     }
+  }
 
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+  // พลุไฟ canvas setup
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  // ลูกไฟพื้นหลัง canvas setup
+  const bgCanvas = document.getElementById("bgParticles");
+  const bgCtx = bgCanvas.getContext("2d");
+
+  function resizeAll() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const fireworks = [];
-    function firework() {
-      for (let i = 0; i < 30; i++) {
-        fireworks.push({
-          x: canvas.width / 2,
-          y: canvas.height,
-          vx: Math.random() * 6 - 3,
-          vy: -Math.random() * 10 - 5,
-          alpha: 1,
-          color: `hsl(${Math.random() * 360}, 100%, 50%)`
-        });
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const fw of fireworks) {
-        fw.x += fw.vx;
-        fw.y += fw.vy;
-        fw.alpha -= 0.02;
-        ctx.globalAlpha = fw.alpha;
-        ctx.fillStyle = fw.color;
-        ctx.beginPath();
-        ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      for (let i = fireworks.length - 1; i >= 0; i--) {
-        if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
-      }
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-<canvas id="bgParticles" style="position: fixed; top: 0; left: 0; z-index: 1;"></canvas>
-<script>
-const bgCanvas = document.getElementById("bgParticles");
-const bgCtx = bgCanvas.getContext("2d");
-bgCanvas.width = window.innerWidth;
-bgCanvas.height = window.innerHeight;
-
-window.addEventListener("resize", () => {
-  bgCanvas.width = window.innerWidth;
-  bgCanvas.height = window.innerHeight;
-});
-
-const balls = [];
-const numBalls = 50;
-
-for (let i = 0; i < numBalls; i++) {
-  balls.push({
-    x: Math.random() * bgCanvas.width,
-    y: Math.random() * bgCanvas.height,
-    r: Math.random() * 15 + 5,
-    dx: (Math.random() - 0.5) * 2,
-    dy: (Math.random() - 0.5) * 2,
-    color: `hsla(${Math.random() * 360}, 100%, 70%, 0.6)`
-  });
-}
-
-function drawBalls() {
-  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-  for (let ball of balls) {
-    bgCtx.beginPath();
-    bgCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-    bgCtx.fillStyle = ball.color;
-    bgCtx.shadowColor = ball.color;
-    bgCtx.shadowBlur = 15;
-    bgCtx.fill();
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-
-    // เด้งขอบ
-    if (ball.x < 0 || ball.x > bgCanvas.width) ball.dx *= -1;
-    if (ball.y < 0 || ball.y > bgCanvas.height) ball.dy *= -1;
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
   }
-  requestAnimationFrame(drawBalls);
-}
-drawBalls();
-</script>
+  window.addEventListener("resize", resizeAll);
+  resizeAll();
 
+  // พลุไฟ particles
+  const fireworks = [];
+  function firework() {
+    for (let i = 0; i < 30; i++) {
+      fireworks.push({
+        x: canvas.width / 2,
+        y: canvas.height,
+        vx: Math.random() * 6 - 3,
+        vy: -Math.random() * 10 - 5,
+        alpha: 1,
+        color: `hsl(${Math.random() * 360}, 100%, 50%)`
+      });
+    }
+  }
+
+  function animateFireworks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const fw of fireworks) {
+      fw.x += fw.vx;
+      fw.y += fw.vy;
+      fw.alpha -= 0.02;
+      ctx.globalAlpha = fw.alpha;
+      ctx.fillStyle = fw.color;
+      ctx.beginPath();
+      ctx.arc(fw.x, fw.y, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    for (let i = fireworks.length - 1; i >= 0; i--) {
+      if (fireworks[i].alpha <= 0) fireworks.splice(i, 1);
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animateFireworks);
+  }
+  animateFireworks();
+
+  // ลูกไฟสีรุ้ง (floating balls) พื้นหลัง
+  const balls = [];
+  const numBalls = 40;
+
+  for (let i = 0; i < numBalls; i++) {
+    balls.push({
+      x: Math.random() * bgCanvas.width,
+      y: Math.random() * bgCanvas.height,
+      r: Math.random() * 12 + 8,
+      dx: (Math.random() - 0.5) * 1.5,
+      dy: (Math.random() - 0.5) * 1.5,
+      color: `hsl(${Math.random() * 360}, 100%, 70%, 0.6)`
+    });
+  }
+
+  function animateBalls() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    for (const ball of balls) {
+      bgCtx.beginPath();
+      bgCtx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+      bgCtx.fillStyle = ball.color;
+      bgCtx.shadowColor = ball.color;
+      bgCtx.shadowBlur = 12;
+      bgCtx.fill();
+
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // เด้งขอบ
+      if (ball.x < ball.r || ball.x > bgCanvas.width - ball.r) ball.dx *= -1;
+      if (ball.y < ball.r || ball.y > bgCanvas.height - ball.r) ball.dy *= -1;
+    }
+    requestAnimationFrame(animateBalls);
+  }
+  animateBalls();
+</script>
 </body>
 </html>
